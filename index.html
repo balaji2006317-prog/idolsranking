@@ -13,110 +13,175 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0d0d1a;
+      background: #07071a;
       min-height: 100vh;
       color: #f0eeff;
     }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    .app { padding-bottom: 4rem; }
+
+    /* Top bar */
+    .top-bar {
+      background: #0e0c24; border-bottom: 1px solid #1a1840;
+      padding: 9px 1rem; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .tb-dot { width: 6px; height: 6px; border-radius: 50%; background: #7F77DD; animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+    .tb-text { font-size: 11px; color: #44416a; letter-spacing: 1.5px; text-transform: uppercase; }
 
     /* Hero */
-    .hero { text-align: center; margin-bottom: 2rem; }
-    .hero-badge {
-      display: inline-block; background: #2a1f4e; color: #a99ef5;
-      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-      padding: 4px 16px; border-radius: 99px; border: 1px solid #4a3d8f; margin-bottom: 14px;
-    }
-    .hero h1 { font-size: 30px; font-weight: 600; line-height: 1.25; color: #f0eeff; }
-    .hero h1 span { color: #a99ef5; }
-    .hero p { font-size: 14px; color: #7a7a99; margin-top: 8px; }
-    .live-pill {
+    .hero { text-align: center; padding: 2.5rem 1rem 1rem; }
+    .hero-pill {
       display: inline-flex; align-items: center; gap: 7px;
-      background: #1a1530; border: 1px solid #2e2b52; border-radius: 99px;
-      padding: 5px 14px; font-size: 12px; color: #a99ef5; margin-top: 12px;
+      background: #0e0c24; border: 1px solid #26235a; border-radius: 99px;
+      padding: 6px 16px; margin-bottom: 16px;
     }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #7F77DD; animation: blink 1.2s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .hp-dot { width: 7px; height: 7px; border-radius: 50%; background: #a99ef5; }
+    .hp-text { font-size: 11px; color: #a99ef5; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+    .hero h1 { font-size: 28px; font-weight: 700; color: #fff; line-height: 1.25; }
+    .hero h1 span { color: #a99ef5; }
+    .hero p { font-size: 13px; color: #44416a; margin-top: 8px; line-height: 1.6; }
 
-    /* Stars */
-    .stars { display: flex; justify-content: center; gap: 8px; margin: 1.5rem 0; }
-    .star { width: 5px; height: 5px; border-radius: 50%; background: #3a3860; animation: pulse 2s infinite; }
-    .star:nth-child(2){animation-delay:.4s;background:#534AB7}
-    .star:nth-child(3){animation-delay:.8s}
-    .star:nth-child(4){animation-delay:1.2s;background:#534AB7}
-    .star:nth-child(5){animation-delay:1.6s}
-    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+    /* Dot strip */
+    .dot-strip { display: flex; justify-content: center; gap: 10px; padding: 1.5rem 0 1rem; }
+    .ds { width: 6px; height: 6px; border-radius: 50%; background: #1a1840; }
+    .ds:nth-child(2){ background: #534AB7; }
+    .ds:nth-child(4){ background: #534AB7; }
 
-    /* Categories */
-    .cat-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 1.5rem; }
+    /* Inner container */
+    .inner { max-width: 680px; margin: 0 auto; padding: 0 1rem; }
+
+    /* Category pills */
+    .sec-label { font-size: 10px; color: #2e2b52; letter-spacing: 2px; text-transform: uppercase; text-align: center; margin-bottom: 10px; }
+    .cat-row { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 1.5rem; }
     .cat-btn {
-      padding: 7px 18px; border-radius: 99px; border: 1px solid #2e2b52;
-      font-size: 13px; cursor: pointer; background: #161628; color: #7a7a99; transition: all .15s;
+      padding: 7px 16px; border-radius: 99px; border: 1px solid #1a1840;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      background: #0e0c24; color: #3d3a60; transition: all .15s;
     }
-    .cat-btn:hover { background: #1f1c3a; color: #c0b8f8; border-color: #534AB7; }
-    .cat-btn.active { background: #2a1f4e; color: #a99ef5; border-color: #7F77DD; }
+    .cat-btn:hover { border-color: #534AB7; color: #b0aaf0; background: #14123a; }
+    .cat-btn.active { background: #1c1a48; color: #c0b8f8; border-color: #7F77DD; }
 
-    /* Toggle */
-    .toggle-wrap { text-align: center; margin-bottom: 1.5rem; }
-    .toggle { display: inline-flex; background: #13122b; border: 1px solid #2e2b52; border-radius: 99px; padding: 3px; }
-    .tog-btn { padding: 7px 22px; border-radius: 99px; font-size: 13px; cursor: pointer; color: #7a7a99; border: none; background: transparent; transition: all .15s; }
-    .tog-btn.active { background: #2a1f4e; color: #c0b8f8; }
+    /* View toggle */
+    .view-toggle { text-align: center; margin-bottom: 1.5rem; }
+    .vt-wrap { display: inline-flex; background: #0e0c24; border: 1px solid #1a1840; border-radius: 99px; padding: 3px; }
+    .vt-btn { padding: 7px 20px; border-radius: 99px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: #3d3a60; transition: all .15s; }
+    .vt-btn.active { background: #1c1a48; color: #c0b8f8; }
 
-    /* Battle */
-    .battle-label { text-align: center; margin-bottom: 1rem; }
-    .battle-badge { display: inline-block; background: #1a1530; border: 1px solid #2e2b52; border-radius: 8px; padding: 6px 22px; font-size: 13px; color: #a99ef5; }
-    .arena { display: grid; grid-template-columns: 1fr 52px 1fr; gap: 12px; align-items: center; margin-bottom: 1rem; }
-    .group-card { background: #13122b; border: 1px solid #2e2b52; border-radius: 18px; padding: 1.75rem 1rem; text-align: center; cursor: pointer; transition: all .2s; }
-    .group-card:hover { border-color: #7F77DD; background: #1a1840; }
-    .group-card.voted { border-color: #7F77DD; border-width: 2px; background: #1e1848; }
-    .group-card.loser { opacity: .3; pointer-events: none; }
-    .g-logo { width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; border: 2px solid rgba(255,255,255,.12); }
-    .g-name { font-size: 18px; font-weight: 600; color: #f0eeff; }
-    .g-fandom { font-size: 12px; color: #7a7a99; margin-top: 3px; }
-    .g-votes { font-size: 14px; font-weight: 500; color: #a99ef5; margin-top: 10px; }
-    .vbar-wrap { margin-top: 10px; height: 4px; background: #2a2750; border-radius: 2px; }
-    .vbar { height: 4px; border-radius: 2px; background: #7F77DD; transition: width .5s; }
-    .voted-tag { display: none; margin-top: 9px; background: #2a1f4e; color: #a99ef5; font-size: 11px; padding: 3px 12px; border-radius: 99px; border: 1px solid #534AB7; }
-    .group-card.voted .voted-tag { display: inline-block; }
+    /* Battle title */
+    .battle-title { text-align: center; margin-bottom: 1rem; }
+    .bt-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: #0e0c24; border: 1px solid #1a1840; border-radius: 8px; padding: 7px 20px;
+    }
+    .bt-icon { width: 5px; height: 5px; border-radius: 50%; background: #7F77DD; }
+    .bt-text { font-size: 13px; color: #8a88b8; font-weight: 500; }
 
-    .vs-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-    .vs-ring { width: 46px; height: 46px; border-radius: 50%; background: #1a1530; border: 1px solid #2e2b52; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #a99ef5; }
-    .vs-dot-col { display: flex; flex-direction: column; gap: 4px; align-items: center; }
-    .vdot { width: 3px; height: 3px; border-radius: 50%; background: #2e2b52; }
+    /* Arena */
+    .arena { display: grid; grid-template-columns: 1fr 50px 1fr; gap: 12px; align-items: center; margin-bottom: 1rem; }
+
+    .g-card {
+      background: #0e0c24; border: 1px solid #1a1840;
+      border-radius: 20px; padding: 1.75rem 1rem 1.5rem;
+      text-align: center; cursor: pointer; transition: all .2s;
+      position: relative;
+    }
+    .g-card-top {
+      position: absolute; top: 0; left: 10%; right: 10%;
+      height: 2px; border-radius: 0 0 4px 4px;
+      background: transparent; transition: background .2s;
+    }
+    .g-card:hover { border-color: #3a3680; background: #111030; transform: translateY(-4px); }
+    .g-card:hover .g-card-top { background: #534AB7; }
+    .g-card.voted { border-color: #534AB7; background: #111038; }
+    .g-card.voted .g-card-top { background: #7F77DD; }
+    .g-card.loser { opacity: .22; pointer-events: none; transform: none; }
+
+    .g-av {
+      width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; color: #fff;
+    }
+    .g-name { font-size: 19px; font-weight: 700; color: #f5f2ff; }
+    .g-fandom { font-size: 11px; color: #3d3a60; margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
+    .g-votes { font-size: 14px; font-weight: 600; color: #7F77DD; margin-top: 12px; }
+    .vt { margin-top: 9px; height: 3px; background: #1a1840; border-radius: 2px; }
+    .vf { height: 3px; border-radius: 2px; background: #534AB7; transition: width .5s; }
+    .v-chip {
+      display: none; margin-top: 10px; background: #1c1a48; color: #a99ef5;
+      font-size: 10px; font-weight: 600; padding: 4px 12px;
+      border-radius: 99px; border: 1px solid #3a3680;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .g-card.voted .v-chip { display: inline-block; }
+
+    /* VS */
+    .vs-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .vs-orb {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: #0e0c24; border: 1px solid #26235a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #534AB7;
+    }
+    .vs-vl { width: 1px; height: 24px; background: #1a1840; }
 
     /* Toast */
-    .toast { text-align: center; margin-bottom: 1rem; display: none; animation: fadeUp .3s; }
-    .toast.show { display: block; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-    .toast-inner { display: inline-block; background: #1a1530; border: 1px solid #534AB7; border-radius: 10px; padding: 9px 22px; font-size: 13px; color: #c0b8f8; }
+    .toast { text-align: center; margin-bottom: 1rem; display: none; }
+    .toast.show { display: block; animation: fadeup .3s; }
+    @keyframes fadeup { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .t-box {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #111038; border: 1px solid #3a3680;
+      border-radius: 12px; padding: 9px 20px; font-size: 13px; color: #b0aaf0; font-weight: 500;
+    }
+    .t-check {
+      width: 18px; height: 18px; border-radius: 50%; background: #534AB7;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #fff; flex-shrink: 0;
+    }
 
-    /* Buttons */
+    /* Button */
     .btn-row { display: flex; justify-content: center; margin-bottom: 2.5rem; }
-    .btn-next { padding: 11px 32px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; background: #7F77DD; color: #fff; border: none; transition: background .15s; }
-    .btn-next:hover { background: #534AB7; }
+    .btn-next {
+      padding: 12px 34px; border-radius: 12px; font-size: 14px;
+      font-weight: 600; cursor: pointer; background: #534AB7;
+      color: #fff; border: none; transition: all .15s; letter-spacing: .3px;
+    }
+    .btn-next:hover { background: #3C3489; transform: translateY(-2px); }
 
     /* Leaderboard */
-    .lb-wrap { display: none; }
-    .lb-card { background: #13122b; border: 1px solid #2e2b52; border-radius: 16px; overflow: hidden; }
-    .lb-header { padding: 14px 18px; background: #0f0e22; border-bottom: 1px solid #1e1c38; display: flex; justify-content: space-between; align-items: center; }
-    .lb-header h2 { font-size: 15px; font-weight: 600; color: #a99ef5; }
-    .lb-total { font-size: 12px; color: #5a5a7a; }
-    .lb-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid #1a1930; }
+    .lb-outer { display: none; }
+    .lb-box { background: #0e0c24; border: 1px solid #1a1840; border-radius: 18px; overflow: hidden; }
+    .lb-hdr {
+      padding: 14px 18px; background: #07071a; border-bottom: 1px solid #141230;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .lb-hdr h2 { font-size: 14px; font-weight: 600; color: #a99ef5; }
+    .lb-htotal { font-size: 12px; color: #2e2b52; }
+    .lb-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px; border-bottom: 1px solid #0f0e20; transition: background .15s;
+    }
+    .lb-row:hover { background: #111030; }
     .lb-row:last-child { border-bottom: none; }
-    .lb-rank { font-size: 13px; font-weight: 700; min-width: 32px; }
-    .r1{color:#EF9F27} .r2{color:#B4B2A9} .r3{color:#D85A30} .rn{color:#3a3860}
-    .lb-av { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+    .lb-rank { font-size: 13px; font-weight: 700; min-width: 30px; }
+    .rk1{color:#F5C842} .rk2{color:#b8b6c4} .rk3{color:#e8875a} .rkn{color:#22203a}
+    .lb-ico {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
     .lb-info { flex: 1; }
-    .lb-name { font-size: 14px; font-weight: 500; color: #d0ccf5; }
-    .lb-sub { font-size: 11px; color: #5a5a7a; margin-top: 2px; }
-    .lb-bar-wrap { width: 80px; height: 4px; background: #2a2750; border-radius: 2px; }
-    .lb-bar { height: 4px; border-radius: 2px; background: #7F77DD; }
-    .lb-count { font-size: 13px; font-weight: 600; color: #7F77DD; min-width: 52px; text-align: right; }
-    .loading-msg { text-align: center; color: #5a5a7a; font-size: 13px; padding: 2.5rem; }
+    .lb-gn { font-size: 14px; font-weight: 600; color: #c8c4f0; }
+    .lb-fd { font-size: 10px; color: #2e2b52; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+    .lb-prog { width: 80px; height: 3px; background: #1a1840; border-radius: 2px; }
+    .lb-pf { height: 3px; border-radius: 2px; background: #534AB7; }
+    .lb-n { font-size: 13px; font-weight: 700; color: #534AB7; min-width: 48px; text-align: right; }
+    .lb-loading { text-align: center; color: #2e2b52; font-size: 13px; padding: 3rem; }
 
-    .footer { text-align: center; margin-top: 3rem; color: #3a3860; font-size: 12px; }
+    .footer { text-align: center; margin-top: 3rem; color: #1a1840; font-size: 12px; letter-spacing: .5px; }
 
     @media (max-width: 480px) {
-      .g-logo { width: 58px; height: 58px; font-size: 13px; }
+      .g-av { width: 60px; height: 60px; font-size: 13px; }
       .g-name { font-size: 15px; }
       .arena { grid-template-columns: 1fr 40px 1fr; gap: 8px; }
       .hero h1 { font-size: 22px; }
@@ -124,253 +189,249 @@
   </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+
+  <div class="top-bar">
+    <div class="tb-dot"></div>
+    <div class="tb-text">Live shared votes from all fans</div>
+    <div class="tb-dot"></div>
+  </div>
 
   <div class="hero">
-    <div class="hero-badge">K-pop Bias Battle</div>
-    <h1>Who are the <span>best dancers</span><br>in K-pop?</h1>
-    <p>Vote for your favorite group — every fan's vote counts together!</p>
-    <div class="live-pill"><div class="dot"></div> Live shared votes</div>
+    <div class="hero-pill"><div class="hp-dot"></div><div class="hp-text">K-pop Bias Battle</div></div>
+    <h1>Who are the<br><span>best dancers</span> in K-pop?</h1>
+    <p>Tap a group to vote &bull; All fan votes count together</p>
   </div>
 
-  <div class="stars">
-    <div class="star"></div><div class="star"></div><div class="star"></div>
-    <div class="star"></div><div class="star"></div>
+  <div class="dot-strip">
+    <div class="ds"></div><div class="ds"></div><div class="ds"></div>
+    <div class="ds"></div><div class="ds"></div>
   </div>
 
-  <div class="cat-row" id="catRow"></div>
+  <div class="inner">
+    <div class="sec-label">Choose a category</div>
+    <div class="cat-row" id="catRow"></div>
 
-  <div class="toggle-wrap">
-    <div class="toggle">
-      <button class="tog-btn active" onclick="switchView('battle')">Battle</button>
-      <button class="tog-btn" onclick="switchView('lb')">Leaderboard</button>
-    </div>
-  </div>
-
-  <!-- Battle -->
-  <div id="battleView">
-    <div class="battle-label">
-      <div class="battle-badge" id="battleBadge">Best dance group</div>
-    </div>
-    <div class="arena">
-      <div class="group-card" id="cardL" onclick="castVote('left')">
-        <div class="g-logo" id="logoL"></div>
-        <div class="g-name" id="nameL"></div>
-        <div class="g-fandom" id="fandomL"></div>
-        <div class="g-votes" id="votesL">loading...</div>
-        <div class="vbar-wrap"><div class="vbar" id="barL" style="width:50%"></div></div>
-        <div class="voted-tag">Voted!</div>
-      </div>
-      <div class="vs-col">
-        <div class="vs-dot-col"><div class="vdot"></div><div class="vdot"></div></div>
-        <div class="vs-ring">vs</div>
-        <div class="vs-dot-col"><div class="vdot"></div><div class="vdot"></div></div>
-      </div>
-      <div class="group-card" id="cardR" onclick="castVote('right')">
-        <div class="g-logo" id="logoR"></div>
-        <div class="g-name" id="nameR"></div>
-        <div class="g-fandom" id="fandomR"></div>
-        <div class="g-votes" id="votesR">loading...</div>
-        <div class="vbar-wrap"><div class="vbar" id="barR" style="width:50%"></div></div>
-        <div class="voted-tag">Voted!</div>
+    <div class="view-toggle">
+      <div class="vt-wrap">
+        <button class="vt-btn active" onclick="sv('battle')">Battle</button>
+        <button class="vt-btn" onclick="sv('lb')">Leaderboard</button>
       </div>
     </div>
-    <div class="toast" id="toast"><div class="toast-inner" id="toastMsg"></div></div>
-    <div class="btn-row">
-      <button class="btn-next" onclick="nextBattle()">Next battle ›</button>
-    </div>
-  </div>
 
-  <!-- Leaderboard -->
-  <div class="lb-wrap" id="lbView">
-    <div class="lb-card">
-      <div class="lb-header">
-        <h2 id="lbTitle">Top groups · Best dance</h2>
-        <span class="lb-total" id="lbTotal"></span>
+    <!-- Battle -->
+    <div id="battleView">
+      <div class="battle-title">
+        <div class="bt-badge">
+          <div class="bt-icon"></div>
+          <div class="bt-text" id="btText">Best dance group</div>
+        </div>
       </div>
-      <div id="lbList"><div class="loading-msg">Loading votes...</div></div>
+      <div class="arena">
+        <div class="g-card" id="cL" onclick="vote('left')">
+          <div class="g-card-top"></div>
+          <div class="g-av" id="avL"></div>
+          <div class="g-name" id="nmL"></div>
+          <div class="g-fandom" id="fdL"></div>
+          <div class="g-votes" id="vtL">loading...</div>
+          <div class="vt"><div class="vf" id="bL" style="width:50%"></div></div>
+          <div class="v-chip">Voted</div>
+        </div>
+        <div class="vs-mid">
+          <div class="vs-vl"></div>
+          <div class="vs-orb">vs</div>
+          <div class="vs-vl"></div>
+        </div>
+        <div class="g-card" id="cR" onclick="vote('right')">
+          <div class="g-card-top"></div>
+          <div class="g-av" id="avR"></div>
+          <div class="g-name" id="nmR"></div>
+          <div class="g-fandom" id="fdR"></div>
+          <div class="g-votes" id="vtR">loading...</div>
+          <div class="vt"><div class="vf" id="bR" style="width:50%"></div></div>
+          <div class="v-chip">Voted</div>
+        </div>
+      </div>
+      <div class="toast" id="toast">
+        <div class="t-box">
+          <div class="t-check">&#10003;</div>
+          <span id="tMsg"></span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="next()">Next battle &#8594;</button>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="lb-outer" id="lbView">
+      <div class="lb-box">
+        <div class="lb-hdr">
+          <h2 id="lbT">Top groups &middot; Best dance</h2>
+          <span class="lb-htotal" id="lbTot"></span>
+        </div>
+        <div id="lbList"><div class="lb-loading">Loading votes...</div></div>
+      </div>
     </div>
   </div>
 
-  <div class="footer">Made with love for K-pop fans &hearts;</div>
+  <div class="footer">Made with love for K-pop fans everywhere &hearts;</div>
 </div>
 
 <script>
-  /* ================================================================
-     FIREBASE CONFIG — Replace with YOUR values from Firebase Console
-     Steps:
-       1. Go to https://firebase.google.com → sign in with Google
-       2. Click "Create a project" → name it kpop-bias-battle
-       3. Go to Project Settings → click the </> Web icon
-       4. Copy each value below and paste it here
-  ================================================================ */
+  /* ======================================================
+     YOUR FIREBASE CONFIG — already filled in for you!
+  ====================================================== */
   const firebaseConfig = {
-    apiKey:            "PASTE_YOUR_API_KEY_HERE",
-    authDomain:        "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
-    projectId:         "PASTE_YOUR_PROJECT_ID_HERE",
-    storageBucket:     "PASTE_YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "PASTE_YOUR_SENDER_ID_HERE",
-    appId:             "PASTE_YOUR_APP_ID_HERE"
+    apiKey:            "AIzaSyCmRJmcOocUBcScst31zyKy_eDwsA3BiWo",
+    authDomain:        "idolsranking-f2790.firebaseapp.com",
+    projectId:         "idolsranking-f2790",
+    storageBucket:     "idolsranking-f2790.firebasestorage.app",
+    messagingSenderId: "185961168273",
+    appId:             "1:185961168273:web:99b69254fd535489f16e30"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  /* ================================================================
-     GROUPS — Add or remove groups here anytime!
-  ================================================================ */
-  const CATEGORIES = [
-    "Best dance",
-    "Best vocals",
-    "Best visuals",
-    "Best energy",
-    "Best fashion"
+  /* ======================================================
+     GROUPS & CATEGORIES
+  ====================================================== */
+  const CATS = ["Best dance","Best vocals","Best visuals","Best energy","Best fashion"];
+
+  const GRP = [
+    { name:"BTS",        f:"A.R.M.Y",  color:"#534AB7", ini:"BTS" },
+    { name:"BLACKPINK",  f:"BLINK",    color:"#993356", ini:"BP"  },
+    { name:"TWICE",      f:"ONCE",     color:"#D85A30", ini:"TWC" },
+    { name:"EXO",        f:"EXO-L",    color:"#185FA5", ini:"EXO" },
+    { name:"aespa",      f:"MY",       color:"#0F6E56", ini:"AES" },
+    { name:"Stray Kids", f:"STAY",     color:"#BA7517", ini:"SKZ" },
+    { name:"SEVENTEEN",  f:"CARAT",    color:"#3C3489", ini:"SVT" },
+    { name:"NCT 127",    f:"NCTzen",   color:"#A32D2D", ini:"NCT" },
+    { name:"IVE",        f:"DIVE",     color:"#854F0B", ini:"IVE" },
+    { name:"NewJeans",   f:"Bunnies",  color:"#3B6D11", ini:"NJ"  },
   ];
 
-  const GROUPS = [
-    { name: "BTS",        fandom: "A.R.M.Y",  color: "#534AB7", initials: "BTS" },
-    { name: "BLACKPINK",  fandom: "BLINK",    color: "#993356", initials: "BP"  },
-    { name: "TWICE",      fandom: "ONCE",     color: "#D85A30", initials: "TWC" },
-    { name: "EXO",        fandom: "EXO-L",    color: "#185FA5", initials: "EXO" },
-    { name: "aespa",      fandom: "MY",       color: "#0F6E56", initials: "AES" },
-    { name: "Stray Kids", fandom: "STAY",     color: "#BA7517", initials: "SKZ" },
-    { name: "SEVENTEEN",  fandom: "CARAT",    color: "#3C3489", initials: "SVT" },
-    { name: "NCT 127",    fandom: "NCTzen",   color: "#A32D2D", initials: "NCT" },
-    { name: "IVE",        fandom: "DIVE",     color: "#854F0B", initials: "IVE" },
-    { name: "NewJeans",   fandom: "Bunnies",  color: "#3B6D11", initials: "NJ"  },
-  ];
+  /* ======================================================
+     APP LOGIC
+  ====================================================== */
+  let cat = "Best dance", li = 0, ri = 1, voted = false, vv = {};
 
-  /* ── No need to edit below this line! ── */
-  let currentCat = "Best dance";
-  let leftIdx = 0, rightIdx = 1;
-  let hasVoted = false;
-  let localVotes = {};
+  GRP.forEach(g => CATS.forEach(c => { vv[g.name+"_"+c] = 0; }));
 
-  function voteKey(groupName, cat) {
-    return groupName.replace(/\s+/g, "_") + "__" + cat.replace(/\s+/g, "_");
-  }
+  function vkey(n, c) { return n.replace(/\s+/g,"_") + "__" + c.replace(/\s+/g,"_"); }
 
-  async function loadAllVotes() {
+  async function loadVotes() {
     try {
       const snap = await db.collection("votes").get();
-      snap.forEach(doc => { localVotes[doc.id] = doc.data().count || 0; });
-    } catch (e) {
-      console.warn("Firebase not set up yet — using local votes for now.");
-    }
+      snap.forEach(doc => { vv[doc.id.replace("__","_")] = doc.data().count || 0; });
+    } catch(e) { console.warn("Firebase not connected:", e); }
   }
 
-  async function incrementVote(groupName, cat) {
-    const key = voteKey(groupName, cat);
-    localVotes[key] = (localVotes[key] || 0) + 1;
+  async function saveVote(name, c) {
+    const key = vkey(name, c);
+    const localKey = name+"_"+c;
+    vv[localKey] = (vv[localKey] || 0) + 1;
     try {
       await db.collection("votes").doc(key).set(
-        { group: groupName, category: cat, count: firebase.firestore.FieldValue.increment(1) },
+        { group: name, category: c, count: firebase.firestore.FieldValue.increment(1) },
         { merge: true }
       );
-    } catch (e) {
-      console.warn("Vote saved locally only — Firebase not connected.");
-    }
+    } catch(e) { console.warn("Vote saved locally only:", e); }
   }
 
-  function getVote(groupName, cat) {
-    return localVotes[voteKey(groupName, cat)] || 0;
-  }
+  function gv(n, c) { return vv[n+"_"+c] || 0; }
 
   function buildCats() {
     const row = document.getElementById("catRow");
     row.innerHTML = "";
-    CATEGORIES.forEach(c => {
-      const btn = document.createElement("button");
-      btn.className = "cat-btn" + (c === currentCat ? " active" : "");
-      btn.textContent = c;
-      btn.onclick = () => { currentCat = c; buildCats(); nextBattle(); };
-      row.appendChild(btn);
+    CATS.forEach(c => {
+      const b = document.createElement("button");
+      b.className = "cat-btn" + (c === cat ? " active" : "");
+      b.textContent = c;
+      b.onclick = () => { cat = c; buildCats(); next(); };
+      row.appendChild(b);
     });
-    document.getElementById("battleBadge").textContent = currentCat + " group";
+    document.getElementById("btText").textContent = cat + " group";
   }
 
-  function pickTwo() {
-    let a = Math.floor(Math.random() * GROUPS.length);
-    let b;
-    do { b = Math.floor(Math.random() * GROUPS.length); } while (b === a);
-    leftIdx = a;
-    rightIdx = b;
+  function pick() {
+    let a = Math.floor(Math.random() * GRP.length), b;
+    do { b = Math.floor(Math.random() * GRP.length); } while (b === a);
+    li = a; ri = b;
   }
 
-  function renderBattle() {
-    const L = GROUPS[leftIdx], R = GROUPS[rightIdx];
-    const lv = getVote(L.name, currentCat);
-    const rv = getVote(R.name, currentCat);
-    const total = lv + rv || 1;
+  function render() {
+    const L = GRP[li], R = GRP[ri];
+    const lv = gv(L.name, cat), rv = gv(R.name, cat), tot = lv + rv || 1;
 
-    function fillCard(side, g, v, pct) {
-      document.getElementById("logo" + side).style.background = g.color;
-      document.getElementById("logo" + side).textContent = g.initials;
-      document.getElementById("name" + side).textContent = g.name;
-      document.getElementById("fandom" + side).textContent = g.fandom;
-      document.getElementById("votes" + side).textContent = v.toLocaleString() + " votes";
-      document.getElementById("bar" + side).style.width = pct + "%";
-      document.getElementById("card" + side).classList.remove("voted", "loser");
+    function fc(s, g, v, p) {
+      document.getElementById("av"+s).style.background = g.color;
+      document.getElementById("av"+s).textContent = g.ini;
+      document.getElementById("nm"+s).textContent = g.name;
+      document.getElementById("fd"+s).textContent = g.f;
+      document.getElementById("vt"+s).textContent = v.toLocaleString() + " votes";
+      document.getElementById("b"+s).style.width = p + "%";
+      document.getElementById("c"+s).classList.remove("voted","loser");
     }
 
-    fillCard("L", L, lv, Math.round(lv / total * 100));
-    fillCard("R", R, rv, Math.round(rv / total * 100));
+    fc("L", L, lv, Math.round(lv/tot*100));
+    fc("R", R, rv, Math.round(rv/tot*100));
     document.getElementById("toast").classList.remove("show");
-    hasVoted = false;
+    voted = false;
   }
 
-  async function castVote(side) {
-    if (hasVoted) return;
-    hasVoted = true;
-    const winner = side === "left" ? GROUPS[leftIdx] : GROUPS[rightIdx];
-    await incrementVote(winner.name, currentCat);
-    document.getElementById("card" + (side === "left" ? "L" : "R")).classList.add("voted");
-    document.getElementById("card" + (side === "left" ? "R" : "L")).classList.add("loser");
-    document.getElementById("toastMsg").textContent =
-      "You voted for " + winner.name + "! Vote saved!";
+  async function vote(side) {
+    if (voted) return;
+    voted = true;
+    const w = side === "left" ? GRP[li] : GRP[ri];
+    await saveVote(w.name, cat);
+    document.getElementById("c"+(side==="left"?"L":"R")).classList.add("voted");
+    document.getElementById("c"+(side==="left"?"R":"L")).classList.add("loser");
+    document.getElementById("tMsg").textContent = "Voted for " + w.name + "! Your vote is live on the board.";
     document.getElementById("toast").classList.add("show");
-    renderBattle();
+    render();
   }
 
-  function nextBattle() { pickTwo(); renderBattle(); }
+  function next() { pick(); render(); }
 
-  function switchView(v) {
+  function sv(v) {
     document.getElementById("battleView").style.display = v === "battle" ? "block" : "none";
     document.getElementById("lbView").style.display = v === "lb" ? "block" : "none";
-    document.querySelectorAll(".tog-btn").forEach((b, i) => {
-      b.classList.toggle("active", (i === 0 && v === "battle") || (i === 1 && v === "lb"));
+    document.querySelectorAll(".vt-btn").forEach((b,i) => {
+      b.classList.toggle("active", (i===0&&v==="battle") || (i===1&&v==="lb"));
     });
     if (v === "lb") renderLB();
   }
 
   function renderLB() {
-    document.getElementById("lbTitle").textContent = "Top groups · " + currentCat;
-    const sorted = GROUPS.map(g => ({ ...g, v: getVote(g.name, currentCat) }))
-                         .sort((a, b) => b.v - a.v);
-    const maxV = sorted[0].v || 1;
-    const total = sorted.reduce((s, g) => s + g.v, 0);
-    document.getElementById("lbTotal").textContent = total.toLocaleString() + " total votes";
-    document.getElementById("lbList").innerHTML = sorted.map((g, i) => {
-      const rankClass = i === 0 ? "r1" : i === 1 ? "r2" : i === 2 ? "r3" : "rn";
-      const medal = i === 0 ? "1st" : i === 1 ? "2nd" : i === 2 ? "3rd" : (i + 1) + "th";
+    document.getElementById("lbT").textContent = "Top groups · " + cat;
+    const s = GRP.map(g => ({...g, v: gv(g.name, cat)})).sort((a,b) => b.v - a.v);
+    const mx = s[0].v || 1;
+    const tot = s.reduce((x,g) => x + g.v, 0);
+    document.getElementById("lbTot").textContent = tot.toLocaleString() + " total votes";
+    document.getElementById("lbList").innerHTML = s.map((g,i) => {
+      const rc = ["rk1","rk2","rk3","rkn"][Math.min(i,3)];
+      const m = i===0?"1st":i===1?"2nd":i===2?"3rd":(i+1)+"th";
       return `<div class="lb-row">
-        <div class="lb-rank ${rankClass}">${medal}</div>
-        <div class="lb-av" style="background:${g.color}">${g.initials}</div>
+        <div class="lb-rank ${rc}">${m}</div>
+        <div class="lb-ico" style="background:${g.color}">${g.ini}</div>
         <div class="lb-info">
-          <div class="lb-name">${g.name}</div>
-          <div class="lb-sub">${g.fandom} fandom</div>
+          <div class="lb-gn">${g.name}</div>
+          <div class="lb-fd">${g.f}</div>
         </div>
-        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(g.v/maxV*100)}%"></div></div>
-        <div class="lb-count">${g.v.toLocaleString()}</div>
+        <div class="lb-prog"><div class="lb-pf" style="width:${Math.round(g.v/mx*100)}%"></div></div>
+        <div class="lb-n">${g.v.toLocaleString()}</div>
       </div>`;
     }).join("");
   }
 
+  /* Start the app */
   (async () => {
-    await loadAllVotes();
+    await loadVotes();
     buildCats();
-    pickTwo();
-    renderBattle();
+    pick();
+    render();
   })();
 </script>
 </body>
