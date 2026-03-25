@@ -1,164 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Idols Ranking</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Idols Ranking</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #07071a; min-height: 100vh; color: #f0eeff; }
+    .app { padding-bottom: 4rem; }
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    .top-bar { background: #0e0c24; border-bottom: 1px solid #1a1840; padding: 9px 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .tb-dot { width: 6px; height: 6px; border-radius: 50%; background: #7F77DD; animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+    .tb-text { font-size: 11px; color: #44416a; letter-spacing: 1.5px; text-transform: uppercase; }
 
-<style>
-body{font-family:sans-serif;background:#07071a;color:#fff;text-align:center}
-button{cursor:pointer}
-.g-img-wrap{width:80px;height:80px;border-radius:50%;overflow:hidden;margin:auto}
-.g-img-wrap img{width:100%;height:100%;object-fit:cover}
-</style>
+    .hero { text-align: center; padding: 2.5rem 1rem 1rem; }
+    .hero-pill { display: inline-flex; align-items: center; gap: 7px; background: #0e0c24; border: 1px solid #26235a; border-radius: 99px; padding: 6px 16px; margin-bottom: 16px; }
+    .hp-dot { width: 7px; height: 7px; border-radius: 50%; background: #a99ef5; }
+    .hp-text { font-size: 11px; color: #a99ef5; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+    .hero h1 { font-size: 32px; font-weight: 700; color: #fff; line-height: 1.25; letter-spacing: 2px; }
+    .hero h1 span { color: #a99ef5; }
+    .hero p { font-size: 13px; color: #44416a; margin-top: 8px; }
+
+    .dot-strip { display: flex; justify-content: center; gap: 10px; padding: 1.5rem 0 1rem; }
+    .ds { width: 6px; height: 6px; border-radius: 50%; background: #1a1840; }
+    .ds:nth-child(2){ background: #534AB7; } .ds:nth-child(4){ background: #534AB7; }
+
+    .inner { max-width: 680px; margin: 0 auto; padding: 0 1rem; }
+
+    .sec-label { font-size: 10px; color: #2e2b52; letter-spacing: 2px; text-transform: uppercase; text-align: center; margin-bottom: 10px; }
+    .cat-row { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 1.5rem; }
+    .cat-btn { padding: 7px 16px; border-radius: 99px; border: 1px solid #1a1840; font-size: 12px; font-weight: 500; cursor: pointer; background: #0e0c24; color: #3d3a60; transition: all .15s; }
+    .cat-btn:hover { border-color: #534AB7; color: #b0aaf0; background: #14123a; }
+    .cat-btn.active { background: #1c1a48; color: #c0b8f8; border-color: #7F77DD; }
+
+    .view-toggle { text-align: center; margin-bottom: 1.5rem; }
+    .vt-wrap { display: inline-flex; background: #0e0c24; border: 1px solid #1a1840; border-radius: 99px; padding: 3px; }
+    .vt-btn { padding: 7px 20px; border-radius: 99px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: #3d3a60; transition: all .15s; }
+    .vt-btn.active { background: #1c1a48; color: #c0b8f8; }
+
+    .battle-title { text-align: center; margin-bottom: 1rem; }
+    .bt-badge { display: inline-flex; align-items: center; gap: 7px; background: #0e0c24; border: 1px solid #1a1840; border-radius: 8px; padding: 7px 20px; }
+    .bt-icon { width: 5px; height: 5px; border-radius: 50%; background: #7F77DD; }
+    .bt-text { font-size: 13px; color: #8a88b8; font-weight: 500; }
+
+    .arena { display: grid; grid-template-columns: 1fr 50px 1fr; gap: 12px; align-items: start; margin-bottom: 1rem; }
+
+    .g-card { background: #0e0c24; border: 1px solid #1a1840; border-radius: 20px; padding: 1.5rem 1rem 1.25rem; text-align: center; transition: all .2s; position: relative; display: flex; flex-direction: column; align-items: center; }
+    .g-card-top { position: absolute; top: 0; left: 10%; right: 10%; height: 2px; border-radius: 0 0 4px 4px; background: transparent; transition: background .2s; }
+    .g-card:hover { border-color: #3a3680; background: #111030; }
+    .g-card:hover .g-card-top { background: #534AB7; }
+    .g-card.voted { border-color: #534AB7; background: #111038; pointer-events: none; }
+    .g-card.voted .g-card-top { background: #7F77DD; }
+    .g-card.loser { opacity: .25; pointer-events: none; }
+
+    /* Group image */
+    .g-img-wrap { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 12px; overflow: hidden; border: 3px solid #1a1840; background: #1a1840; flex-shrink: 0; }
+    .g-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .g-img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff; }
+
+    .g-name { font-size: 18px; font-weight: 700; color: #f5f2ff; margin-top: 4px; }
+    .g-fandom { font-size: 11px; color: #3d3a60; margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
+    .g-votes { font-size: 13px; font-weight: 600; color: #7F77DD; margin-top: 10px; }
+    .vt { margin-top: 8px; height: 3px; background: #1a1840; border-radius: 2px; width: 100%; }
+    .vf { height: 3px; border-radius: 2px; background: #534AB7; transition: width .5s; }
+
+    .v-chip { display: none; margin-top: 10px; background: #1c1a48; color: #a99ef5; font-size: 10px; font-weight: 600; padding: 4px 12px; border-radius: 99px; border: 1px solid #3a3680; letter-spacing: 1px; text-transform: uppercase; }
+    .g-card.voted .v-chip { display: inline-block; }
+
+    .vote-btn { margin-top: 14px; width: 100%; padding: 11px 0; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: #534AB7; color: #fff; border: none; transition: all .18s; letter-spacing: 1px; text-transform: uppercase; }
+    .vote-btn:hover { background: #3C3489; }
+    .g-card.voted .vote-btn { background: #1c1a48; color: #6a68a0; border: 1px solid #2a2760; cursor: default; pointer-events: none; }
+    .g-card.loser .vote-btn { display: none; }
+
+    .vs-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 3.5rem; }
+    .vs-orb { width: 46px; height: 46px; border-radius: 50%; background: #0e0c24; border: 1px solid #26235a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #534AB7; }
+    .vs-vl { width: 1px; height: 24px; background: #1a1840; }
+
+    .toast { text-align: center; margin-bottom: 1rem; display: none; }
+    .toast.show { display: block; animation: fadeup .3s; }
+    @keyframes fadeup { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .t-box { display: inline-flex; align-items: center; gap: 8px; background: #111038; border: 1px solid #3a3680; border-radius: 12px; padding: 9px 20px; font-size: 13px; color: #b0aaf0; font-weight: 500; }
+    .t-check { width: 18px; height: 18px; border-radius: 50%; background: #534AB7; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; flex-shrink: 0; }
+
+    .btn-row { display: flex; justify-content: center; margin-bottom: 2.5rem; }
+    .btn-next { padding: 12px 34px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: #1c1a48; color: #a99ef5; border: 1px solid #3a3680; transition: all .15s; }
+    .btn-next:hover { background: #26235a; }
+
+    .lb-outer { display: none; }
+    .lb-box { background: #0e0c24; border: 1px solid #1a1840; border-radius: 18px; overflow: hidden; }
+    .lb-hdr { padding: 14px 18px; background: #07071a; border-bottom: 1px solid #141230; display: flex; justify-content: space-between; align-items: center; }
+    .lb-hdr h2 { font-size: 14px; font-weight: 600; color: #a99ef5; }
+    .lb-htotal { font-size: 12px; color: #2e2b52; }
+    .lb-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid #0f0e20; transition: background .15s; }
+    .lb-row:hover { background: #111030; }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-rank { font-size: 13px; font-weight: 700; min-width: 30px; }
+    .rk1{color:#F5C842} .rk2{color:#b8b6c4} .rk3{color:#e8875a} .rkn{color:#22203a}
+    .lb-img { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid #1a1840; background: #1a1840; }
+    .lb-img img { width: 100%; height: 100%; object-fit: cover; }
+    .lb-img-fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+    .lb-info { flex: 1; }
+    .lb-gn { font-size: 14px; font-weight: 600; color: #c8c4f0; }
+    .lb-fd { font-size: 10px; color: #2e2b52; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+    .lb-prog { width: 80px; height: 3px; background: #1a1840; border-radius: 2px; }
+    .lb-pf { height: 3px; border-radius: 2px; background: #534AB7; }
+    .lb-n { font-size: 13px; font-weight: 700; color: #534AB7; min-width: 48px; text-align: right; }
+    .lb-loading { text-align: center; color: #2e2b52; font-size: 13px; padding: 3rem; }
+
+    .footer { text-align: center; margin-top: 3rem; color: #1a1840; font-size: 12px; }
+
+    @media (max-width: 480px) {
+      .g-img-wrap { width: 70px; height: 70px; }
+      .g-name { font-size: 15px; }
+      .arena { grid-template-columns: 1fr 40px 1fr; gap: 8px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
 </head>
-
 <body>
+<div class="app">
 
-<h1>IDOLS RANKING</h1>
-
-<div>
-<button onclick="sv('battle')">Battle</button>
-<button onclick="sv('lb')">Leaderboard</button>
-</div>
-
-<h3 id="btText"></h3>
-
-<div id="battleView">
-  <div>
-    <div id="imgL" class="g-img-wrap"></div>
-    <h2 id="nmL"></h2>
-    <p id="fdL"></p>
-    <p id="vtL"></p>
-    <button onclick="doVote('left')">Vote</button>
+  <div class="top-bar">
+    <div class="tb-dot"></div>
+    <div class="tb-text">Live shared votes from all fans</div>
+    <div class="tb-dot"></div>
   </div>
 
-  <h2>VS</h2>
-
-  <div>
-    <div id="imgR" class="g-img-wrap"></div>
-    <h2 id="nmR"></h2>
-    <p id="fdR"></p>
-    <p id="vtR"></p>
-    <button onclick="doVote('right')">Vote</button>
+  <div class="hero">
+    <div class="hero-pill"><div class="hp-dot"></div><div class="hp-text">Fan Voting Platform</div></div>
+    <h1>IDOLS <span>RANKING</span></h1>
+    <p>Vote for your favorite group &bull; All fan votes count together</p>
   </div>
 
-  <br>
-  <button onclick="nextBattle()">Next battle</button>
-</div>
+  <div class="dot-strip">
+    <div class="ds"></div><div class="ds"></div><div class="ds"></div>
+    <div class="ds"></div><div class="ds"></div>
+  </div>
 
-<div id="lbView" style="display:none">
-  <h2>Leaderboard</h2>
-  <div id="lbList"></div>
+  <div class="inner">
+    <div class="sec-label">Choose a category</div>
+    <div class="cat-row" id="catRow"></div>
+
+    <div class="view-toggle">
+      <div class="vt-wrap">
+        <button class="vt-btn active" onclick="sv('battle')">Battle</button>
+        <button class="vt-btn" onclick="sv('lb')">Leaderboard</button>
+      </div>
+    </div>
+
+    <div id="battleView">
+      <div class="battle-title">
+        <div class="bt-badge"><div class="bt-icon"></div><div class="bt-text" id="btText">Best dance group</div></div>
+      </div>
+      <div class="arena">
+        <div class="g-card" id="cL">
+          <div class="g-card-top"></div>
+          <div class="g-img-wrap" id="imgL"></div>
+          <div class="g-name" id="nmL"></div>
+          <div class="g-fandom" id="fdL"></div>
+          <div class="g-votes" id="vtL">loading...</div>
+          <div class="vt"><div class="vf" id="bL" style="width:50%"></div></div>
+          <div class="v-chip">Voted!</div>
+          <button class="vote-btn" id="vbL" onclick="doVote('left')">Vote</button>
+        </div>
+        <div class="vs-mid">
+          <div class="vs-vl"></div>
+          <div class="vs-orb">vs</div>
+          <div class="vs-vl"></div>
+        </div>
+        <div class="g-card" id="cR">
+          <div class="g-card-top"></div>
+          <div class="g-img-wrap" id="imgR"></div>
+          <div class="g-name" id="nmR"></div>
+          <div class="g-fandom" id="fdR"></div>
+          <div class="g-votes" id="vtR">loading...</div>
+          <div class="vt"><div class="vf" id="bR" style="width:50%"></div></div>
+          <div class="v-chip">Voted!</div>
+          <button class="vote-btn" id="vbR" onclick="doVote('right')">Vote</button>
+        </div>
+      </div>
+      <div class="toast" id="toast">
+        <div class="t-box"><div class="t-check">&#10003;</div><span id="tMsg"></span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="nextBattle()">Next battle &#8594;</button>
+      </div>
+    </div>
+
+    <div class="lb-outer" id="lbView">
+      <div class="lb-box">
+        <div class="lb-hdr">
+          <h2 id="lbT">Top groups</h2>
+          <span class="lb-htotal" id="lbTot"></span>
+        </div>
+        <div id="lbList"><div class="lb-loading">Loading votes...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Idols Ranking &bull; Made with love for K-pop fans &hearts;</div>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCmRJmcOocUBcScst31zyKy_eDwsA3BiWo",
-  authDomain: "idolsranking-f2790.firebaseapp.com",
-  projectId: "idolsranking-f2790"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+  /* Firebase config */
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCmRJmcOocUBcScst31zyKy_eDwsA3BiWo",
+    authDomain:        "idolsranking-f2790.firebaseapp.com",
+    projectId:         "idolsranking-f2790",
+    storageBucket:     "idolsranking-f2790.firebasestorage.app",
+    messagingSenderId: "185961168273",
+    appId:             "1:185961168273:web:99b69254fd535489f16e30"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-const CATS=["Best dance","Best vocals"];
-let cat="Best dance";
+  /* Groups — images from Wikipedia/public sources */
+  const CATS = ["Best dance","Best vocals","Best visuals","Best energy","Best fashion"];
 
-const GRP=[
-{name:"BTS",f:"ARMY",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/BTS_at_the_2019_Melon_Music_Awards.jpg/220px-BTS_at_the_2019_Melon_Music_Awards.jpg"},
-{name:"BLACKPINK",f:"BLINK",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg/220px-Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg"},
-{name:"EXO",f:"EXO-L",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EXO_at_the_2019_Melon_Music_Awards.jpg/220px-EXO_at_the_2019_Melon_Music_Awards.jpg"}
-];
+  const GRP = [
+    { name:"BTS",        f:"A.R.M.Y",  color:"#534AB7", ini:"BTS",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/BTS_at_the_2019_Melon_Music_Awards.jpg/220px-BTS_at_the_2019_Melon_Music_Awards.jpg" },
+    { name:"BLACKPINK",  f:"BLINK",    color:"#993356", ini:"BP",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg/220px-Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg" },
+    { name:"TWICE",      f:"ONCE",     color:"#D85A30", ini:"TWC",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/TWICE_at_the_2019_Melon_Music_Awards.jpg/220px-TWICE_at_the_2019_Melon_Music_Awards.jpg" },
+    { name:"EXO",        f:"EXO-L",    color:"#185FA5", ini:"EXO",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EXO_at_the_2019_Melon_Music_Awards.jpg/220px-EXO_at_the_2019_Melon_Music_Awards.jpg" },
+    { name:"aespa",      f:"MY",       color:"#0F6E56", ini:"AES",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aespa_at_the_2022_Melon_Music_Awards.jpg/220px-Aespa_at_the_2022_Melon_Music_Awards.jpg" },
+    { name:"Stray Kids", f:"STAY",     color:"#BA7517", ini:"SKZ",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Stray_Kids_at_the_2022_Melon_Music_Awards.jpg/220px-Stray_Kids_at_the_2022_Melon_Music_Awards.jpg" },
+    { name:"SEVENTEEN",  f:"CARAT",    color:"#3C3489", ini:"SVT",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Seventeen_at_the_2022_Melon_Music_Awards.jpg/220px-Seventeen_at_the_2022_Melon_Music_Awards.jpg" },
+    { name:"NCT 127",    f:"NCTzen",   color:"#A32D2D", ini:"NCT",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/NCT_127_at_the_2022_Melon_Music_Awards.jpg/220px-NCT_127_at_the_2022_Melon_Music_Awards.jpg" },
+    { name:"IVE",        f:"DIVE",     color:"#854F0B", ini:"IVE",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/IVE_at_the_2022_Melon_Music_Awards.jpg/220px-IVE_at_the_2022_Melon_Music_Awards.jpg" },
+    { name:"NewJeans",   f:"Bunnies",  color:"#3B6D11", ini:"NJ",
+      img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/NewJeans_at_the_2022_Melon_Music_Awards.jpg/220px-NewJeans_at_the_2022_Melon_Music_Awards.jpg" },
+  ];
 
-let vv={};
-GRP.forEach(g=>CATS.forEach(c=>vv[g.name+"__"+c]=0));
+  let cat = "Best dance", li = 0, ri = 1, voted = false;
+  let vv = {};
+  GRP.forEach(g => CATS.forEach(c => { vv[g.name + "__" + c] = 0; }));
 
-/* 🔥 FIXED battle system */
-let battles=[];
-let idx=0;
-
-function genBattles(){
-  battles=[];
-  for(let i=0;i<GRP.length;i++){
-    for(let j=i+1;j<GRP.length;j++){
-      battles.push([i,j]);
-    }
+  /* Firebase helpers */
+  async function loadVotes() {
+    try {
+      const snap = await db.collection("votes").get();
+      snap.forEach(doc => {
+        const d = doc.data();
+        if (d.group && d.category) {
+          vv[d.group + "__" + d.category] = d.count || 0;
+        }
+      });
+    } catch(e) { console.warn("Load error:", e); }
   }
-  battles.sort(()=>Math.random()-0.5);
-  idx=0;
-}
 
-function pick(){
-  if(idx>=battles.length) genBattles();
-  const p=battles[idx++];
-  return p;
-}
+  async function saveVote(groupName, category) {
+    const key = groupName.replace(/\s+/g,"_") + "__" + category.replace(/\s+/g,"_");
+    vv[groupName + "__" + category] = (vv[groupName + "__" + category] || 0) + 1;
+    try {
+      await db.collection("votes").doc(key).set({
+        group: groupName,
+        category: category,
+        count: firebase.firestore.FieldValue.increment(1)
+      }, { merge: true });
+    } catch(e) { console.warn("Save error:", e); }
+  }
 
-let li=0,ri=1;
+  function getVote(groupName, category) {
+    return vv[groupName + "__" + category] || 0;
+  }
 
-function nextBattle(){
-  const p=pick();
-  li=p[0];
-  ri=p[1];
-  render();
-}
+  /* Build image with fallback */
+  function buildImg(wrap, g) {
+    wrap.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = g.img;
+    img.alt = g.name;
+    img.onerror = function() {
+      wrap.innerHTML = "";
+      const fb = document.createElement("div");
+      fb.className = "g-img-fallback";
+      fb.style.background = g.color;
+      fb.textContent = g.ini;
+      wrap.appendChild(fb);
+    };
+    wrap.appendChild(img);
+  }
 
-function buildImg(el,g){
-  el.innerHTML=`<img src="${g.img}">`;
-}
+  /* Build categories */
+  function buildCats() {
+    const row = document.getElementById("catRow");
+    row.innerHTML = "";
+    CATS.forEach(c => {
+      const b = document.createElement("button");
+      b.className = "cat-btn" + (c === cat ? " active" : "");
+      b.textContent = c;
+      b.onclick = () => { cat = c; buildCats(); nextBattle(); };
+      row.appendChild(b);
+    });
+    document.getElementById("btText").textContent = cat + " group";
+  }
 
-function render(){
-  const L=GRP[li],R=GRP[ri];
+  /* Pick two random groups */
+  function pick() {
+    let a = Math.floor(Math.random() * GRP.length), b;
+    do { b = Math.floor(Math.random() * GRP.length); } while (b === a);
+    li = a; ri = b;
+  }
 
-  document.getElementById("btText").innerText=cat;
+  /* Render battle */
+  function render() {
+    const L = GRP[li], R = GRP[ri];
+    const lv = getVote(L.name, cat);
+    const rv = getVote(R.name, cat);
+    const tot = lv + rv || 1;
 
-  buildImg(imgL,L);
-  nmL.innerText=L.name;
-  fdL.innerText=L.f;
-  vtL.innerText=getVote(L.name,cat)+" votes";
+    function fillCard(side, g, v, pct) {
+      buildImg(document.getElementById("img" + side), g);
+      document.getElementById("nm" + side).textContent = g.name;
+      document.getElementById("fd" + side).textContent = g.fandom || g.f;
+      document.getElementById("vt" + side).textContent = v.toLocaleString() + " votes";
+      document.getElementById("b" + side).style.width = pct + "%";
+      document.getElementById("c" + side).classList.remove("voted", "loser");
+      document.getElementById("vb" + side).textContent = "Vote";
+    }
 
-  buildImg(imgR,R);
-  nmR.innerText=R.name;
-  fdR.innerText=R.f;
-  vtR.innerText=getVote(R.name,cat)+" votes";
-}
+    fillCard("L", L, lv, Math.round(lv / tot * 100));
+    fillCard("R", R, rv, Math.round(rv / tot * 100));
+    document.getElementById("toast").classList.remove("show");
+    voted = false;
+  }
 
-function getVote(g,c){
-  return vv[g+"__"+c]||0;
-}
+  /* Cast vote */
+  async function doVote(side) {
+    if (voted) return;
+    voted = true;
 
-async function doVote(side){
-  const g=side==="left"?GRP[li]:GRP[ri];
-  vv[g.name+"__"+cat]++;
+    const winner = side === "left" ? GRP[li] : GRP[ri];
+    const winSide = side === "left" ? "L" : "R";
+    const loseSide = side === "left" ? "R" : "L";
 
-  await db.collection("votes").doc(g.name+"_"+cat).set({
-    group:g.name,
-    category:cat,
-    count:firebase.firestore.FieldValue.increment(1)
-  },{merge:true});
+    await saveVote(winner.name, cat);
 
-  nextBattle();
-}
+    document.getElementById("c" + winSide).classList.add("voted");
+    document.getElementById("vb" + winSide).textContent = "Voted!";
+    document.getElementById("c" + loseSide).classList.add("loser");
 
-function sv(v){
-  battleView.style.display=v==="battle"?"block":"none";
-  lbView.style.display=v==="lb"?"block":"none";
-  if(v==="lb") renderLB();
-}
+    const lv = getVote(GRP[li].name, cat);
+    const rv = getVote(GRP[ri].name, cat);
+    const tot = lv + rv || 1;
+    document.getElementById("vt" + winSide).textContent = getVote(winner.name, cat).toLocaleString() + " votes";
+    document.getElementById("b" + "L").style.width = Math.round(lv / tot * 100) + "%";
+    document.getElementById("b" + "R").style.width = Math.round(rv / tot * 100) + "%";
 
-function renderLB(){
-  let arr=GRP.map(g=>({n:g.name,v:getVote(g.name,cat)}));
-  arr.sort((a,b)=>b.v-a.v);
-  lbList.innerHTML=arr.map(g=>`${g.n} - ${g.v}`).join("<br>");
-}
+    document.getElementById("tMsg").textContent = "You voted for " + winner.name + "! Vote saved to the leaderboard.";
+    document.getElementById("toast").classList.add("show");
+  }
 
-/* start */
-genBattles();
-nextBattle();
+  /* Next battle */
+  function nextBattle() { pick(); render(); }
+
+  /* Switch view */
+  function sv(v) {
+    document.getElementById("battleView").style.display = v === "battle" ? "block" : "none";
+    document.getElementById("lbView").style.display = v === "lb" ? "block" : "none";
+    document.querySelectorAll(".vt-btn").forEach((b, i) => {
+      b.classList.toggle("active", (i === 0 && v === "battle") || (i === 1 && v === "lb"));
+    });
+    if (v === "lb") renderLB();
+  }
+
+  /* Render leaderboard */
+  function renderLB() {
+    document.getElementById("lbT").textContent = "Top groups · " + cat;
+    const sorted = GRP.map(g => ({ ...g, v: getVote(g.name, cat) })).sort((a, b) => b.v - a.v);
+    const maxV = sorted[0].v || 1;
+    const total = sorted.reduce((s, g) => s + g.v, 0);
+    document.getElementById("lbTot").textContent = total.toLocaleString() + " total votes";
+
+    document.getElementById("lbList").innerHTML = sorted.map((g, i) => {
+      const rc = ["rk1","rk2","rk3","rkn"][Math.min(i, 3)];
+      const medal = i === 0 ? "1st" : i === 1 ? "2nd" : i === 2 ? "3rd" : (i + 1) + "th";
+      const barW = Math.round(g.v / maxV * 100);
+      return `<div class="lb-row">
+        <div class="lb-rank ${rc}">${medal}</div>
+        <div class="lb-img" id="lbimg_${i}">
+          <div class="lb-img-fb" style="background:${g.color}">${g.ini}</div>
+        </div>
+        <div class="lb-info">
+          <div class="lb-gn">${g.name}</div>
+          <div class="lb-fd">${g.f}</div>
+        </div>
+        <div class="lb-prog"><div class="lb-pf" style="width:${barW}%"></div></div>
+        <div class="lb-n">${g.v.toLocaleString()}</div>
+      </div>`;
+    }).join("");
+
+    sorted.forEach((g, i) => {
+      const wrap = document.getElementById("lbimg_" + i);
+      if (wrap) {
+        wrap.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = g.img;
+        img.alt = g.name;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        img.onerror = function() {
+          wrap.innerHTML = `<div class="lb-img-fb" style="background:${g.color}">${g.ini}</div>`;
+        };
+        wrap.appendChild(img);
+      }
+    });
+  }
+
+  /* Start */
+  (async () => {
+    await loadVotes();
+    buildCats();
+    pick();
+    render();
+  })();
 </script>
-
 </body>
 </html>
