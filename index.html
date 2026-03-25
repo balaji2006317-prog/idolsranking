@@ -1,158 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Idols Ranking</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+body{font-family:sans-serif;background:#07071a;color:#fff;text-align:center}
+button{cursor:pointer}
+.g-img-wrap{width:80px;height:80px;border-radius:50%;overflow:hidden;margin:auto}
+.g-img-wrap img{width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+
+<body>
+
+<h1>IDOLS RANKING</h1>
+
+<div>
+<button onclick="sv('battle')">Battle</button>
+<button onclick="sv('lb')">Leaderboard</button>
+</div>
+
+<h3 id="btText"></h3>
+
+<div id="battleView">
+  <div>
+    <div id="imgL" class="g-img-wrap"></div>
+    <h2 id="nmL"></h2>
+    <p id="fdL"></p>
+    <p id="vtL"></p>
+    <button onclick="doVote('left')">Vote</button>
+  </div>
+
+  <h2>VS</h2>
+
+  <div>
+    <div id="imgR" class="g-img-wrap"></div>
+    <h2 id="nmR"></h2>
+    <p id="fdR"></p>
+    <p id="vtR"></p>
+    <button onclick="doVote('right')">Vote</button>
+  </div>
+
+  <br>
+  <button onclick="nextBattle()">Next battle</button>
+</div>
+
+<div id="lbView" style="display:none">
+  <h2>Leaderboard</h2>
+  <div id="lbList"></div>
+</div>
+
 <script>
-  /* Firebase config */
-  const firebaseConfig = {
-    apiKey: "AIzaSyCmRJmcOocUBcScst31zyKy_eDwsA3BiWo",
-    authDomain: "idolsranking-f2790.firebaseapp.com",
-    projectId: "idolsranking-f2790",
-    storageBucket: "idolsranking-f2790.firebasestorage.app",
-    messagingSenderId: "185961168273",
-    appId: "1:185961168273:web:99b69254fd535489f16e30"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyCmRJmcOocUBcScst31zyKy_eDwsA3BiWo",
+  authDomain: "idolsranking-f2790.firebaseapp.com",
+  projectId: "idolsranking-f2790"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  const CATS = ["Best dance","Best vocals","Best visuals","Best energy","Best fashion"];
+const CATS=["Best dance","Best vocals"];
+let cat="Best dance";
 
-  const GRP = [
-    { name:"BTS", f:"A.R.M.Y", color:"#534AB7", ini:"BTS", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/BTS_at_the_2019_Melon_Music_Awards.jpg/220px-BTS_at_the_2019_Melon_Music_Awards.jpg" },
-    { name:"BLACKPINK", f:"BLINK", color:"#993356", ini:"BP", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg/220px-Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg" },
-    { name:"TWICE", f:"ONCE", color:"#D85A30", ini:"TWC", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/TWICE_at_the_2019_Melon_Music_Awards.jpg/220px-TWICE_at_the_2019_Melon_Music_Awards.jpg" },
-    { name:"EXO", f:"EXO-L", color:"#185FA5", ini:"EXO", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EXO_at_the_2019_Melon_Music_Awards.jpg/220px-EXO_at_the_2019_Melon_Music_Awards.jpg" },
-    { name:"aespa", f:"MY", color:"#0F6E56", ini:"AES", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Aespa_at_the_2022_Melon_Music_Awards.jpg/220px-Aespa_at_the_2022_Melon_Music_Awards.jpg" },
-    { name:"Stray Kids", f:"STAY", color:"#BA7517", ini:"SKZ", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Stray_Kids_at_the_2022_Melon_Music_Awards.jpg/220px-Stray_Kids_at_the_2022_Melon_Music_Awards.jpg" },
-    { name:"SEVENTEEN", f:"CARAT", color:"#3C3489", ini:"SVT", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Seventeen_at_the_2022_Melon_Music_Awards.jpg/220px-Seventeen_at_the_2022_Melon_Music_Awards.jpg" },
-    { name:"NCT 127", f:"NCTzen", color:"#A32D2D", ini:"NCT", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/NCT_127_at_the_2022_Melon_Music_Awards.jpg/220px-NCT_127_at_the_2022_Melon_Music_Awards.jpg" },
-    { name:"IVE", f:"DIVE", color:"#854F0B", ini:"IVE", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/IVE_at_the_2022_Melon_Music_Awards.jpg/220px-IVE_at_the_2022_Melon_Music_Awards.jpg" },
-    { name:"NewJeans", f:"Bunnies", color:"#3B6D11", ini:"NJ", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/NewJeans_at_the_2022_Melon_Music_Awards.jpg/220px-NewJeans_at_the_2022_Melon_Music_Awards.jpg" }
-  ];
+const GRP=[
+{name:"BTS",f:"ARMY",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/BTS_at_the_2019_Melon_Music_Awards.jpg/220px-BTS_at_the_2019_Melon_Music_Awards.jpg"},
+{name:"BLACKPINK",f:"BLINK",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg/220px-Blackpink_at_the_2019_Billboard_Music_Awards_%28cropped%29.jpg"},
+{name:"EXO",f:"EXO-L",img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EXO_at_the_2019_Melon_Music_Awards.jpg/220px-EXO_at_the_2019_Melon_Music_Awards.jpg"}
+];
 
-  let cat = "Best dance", li = 0, ri = 1, voted = false;
-  let vv = {};
+let vv={};
+GRP.forEach(g=>CATS.forEach(c=>vv[g.name+"__"+c]=0));
 
-  /* 🔥 NEW: battle system */
-  let battles = [];
-  let currentBattleIndex = 0;
+/* 🔥 FIXED battle system */
+let battles=[];
+let idx=0;
 
-  GRP.forEach(g => CATS.forEach(c => { vv[g.name + "__" + c] = 0; }));
-
-  function generateBattles() {
-    battles = [];
-
-    for (let i = 0; i < GRP.length; i++) {
-      for (let j = i + 1; j < GRP.length; j++) {
-        battles.push([i, j]);
-      }
+function genBattles(){
+  battles=[];
+  for(let i=0;i<GRP.length;i++){
+    for(let j=i+1;j<GRP.length;j++){
+      battles.push([i,j]);
     }
-
-    for (let i = battles.length - 1; i > 0; i--) {
-      const r = Math.floor(Math.random() * (i + 1));
-      [battles[i], battles[r]] = [battles[r], battles[i]];
-    }
-
-    currentBattleIndex = 0;
   }
+  battles.sort(()=>Math.random()-0.5);
+  idx=0;
+}
 
-  function pick() {
-    if (currentBattleIndex >= battles.length) {
-      generateBattles();
-    }
+function pick(){
+  if(idx>=battles.length) genBattles();
+  const p=battles[idx++];
+  return p;
+}
 
-    const pair = battles[currentBattleIndex];
-    li = pair[0];
-    ri = pair[1];
-    currentBattleIndex++;
-  }
+let li=0,ri=1;
 
-  /* Firebase */
-  async function loadVotes() {
-    const snap = await db.collection("votes").get();
-    snap.forEach(doc => {
-      const d = doc.data();
-      vv[d.group + "__" + d.category] = d.count || 0;
-    });
-  }
+function nextBattle(){
+  const p=pick();
+  li=p[0];
+  ri=p[1];
+  render();
+}
 
-  async function saveVote(groupName, category) {
-    const key = groupName.replace(/\s+/g,"_") + "__" + category.replace(/\s+/g,"_");
-    vv[groupName + "__" + category]++;
+function buildImg(el,g){
+  el.innerHTML=`<img src="${g.img}">`;
+}
 
-    await db.collection("votes").doc(key).set({
-      group: groupName,
-      category: category,
-      count: firebase.firestore.FieldValue.increment(1)
-    }, { merge: true });
-  }
+function render(){
+  const L=GRP[li],R=GRP[ri];
 
-  function getVote(groupName, category) {
-    return vv[groupName + "__" + category] || 0;
-  }
+  document.getElementById("btText").innerText=cat;
 
-  function buildCats() {
-    const row = document.getElementById("catRow");
-    row.innerHTML = "";
+  buildImg(imgL,L);
+  nmL.innerText=L.name;
+  fdL.innerText=L.f;
+  vtL.innerText=getVote(L.name,cat)+" votes";
 
-    CATS.forEach(c => {
-      const b = document.createElement("button");
-      b.className = "cat-btn" + (c === cat ? " active" : "");
-      b.textContent = c;
+  buildImg(imgR,R);
+  nmR.innerText=R.name;
+  fdR.innerText=R.f;
+  vtR.innerText=getVote(R.name,cat)+" votes";
+}
 
-      b.onclick = () => {
-        cat = c;
-        buildCats();
-        generateBattles(); // reset
-        nextBattle();
-      };
+function getVote(g,c){
+  return vv[g+"__"+c]||0;
+}
 
-      row.appendChild(b);
-    });
+async function doVote(side){
+  const g=side==="left"?GRP[li]:GRP[ri];
+  vv[g.name+"__"+cat]++;
 
-    document.getElementById("btText").textContent = cat + " group";
-  }
+  await db.collection("votes").doc(g.name+"_"+cat).set({
+    group:g.name,
+    category:cat,
+    count:firebase.firestore.FieldValue.increment(1)
+  },{merge:true});
 
-  function render() {
-    const L = GRP[li], R = GRP[ri];
-    const lv = getVote(L.name, cat);
-    const rv = getVote(R.name, cat);
-    const tot = lv + rv || 1;
+  nextBattle();
+}
 
-    function fill(side, g, v, pct) {
-      document.getElementById("nm" + side).textContent = g.name;
-      document.getElementById("fd" + side).textContent = g.f;
-      document.getElementById("vt" + side).textContent = v + " votes";
-      document.getElementById("b" + side).style.width = pct + "%";
-      document.getElementById("c" + side).classList.remove("voted","loser");
-    }
+function sv(v){
+  battleView.style.display=v==="battle"?"block":"none";
+  lbView.style.display=v==="lb"?"block":"none";
+  if(v==="lb") renderLB();
+}
 
-    fill("L", L, lv, Math.round(lv/tot*100));
-    fill("R", R, rv, Math.round(rv/tot*100));
+function renderLB(){
+  let arr=GRP.map(g=>({n:g.name,v:getVote(g.name,cat)}));
+  arr.sort((a,b)=>b.v-a.v);
+  lbList.innerHTML=arr.map(g=>`${g.n} - ${g.v}`).join("<br>");
+}
 
-    voted = false;
-  }
-
-  async function doVote(side) {
-    if (voted) return;
-    voted = true;
-
-    const winner = side === "left" ? GRP[li] : GRP[ri];
-    await saveVote(winner.name, cat);
-
-    nextBattle();
-  }
-
-  function nextBattle() {
-    pick();
-    render();
-  }
-
-  function sv(v) {
-    document.getElementById("battleView").style.display = v === "battle" ? "block" : "none";
-    document.getElementById("lbView").style.display = v === "lb" ? "block" : "none";
-  }
-
-  (async () => {
-    await loadVotes();
-    buildCats();
-    generateBattles(); // 🔥 start system
-    nextBattle();
-  })();
+/* start */
+genBattles();
+nextBattle();
 </script>
+
+</body>
+</html>
